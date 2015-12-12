@@ -22,7 +22,13 @@ public class controller : MonoBehaviour {
             value *= .4f;
         var force = new Vector3((value *.5f), 0, 0);
         rb.AddForce(force, ForceMode.Impulse);
-        gcamera.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 10);
+        gcamera.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - (transform.localScale.x * 5));
+
+        if(transform.localScale.x < counter)
+        {
+            rb.mass += .01f;
+            transform.localScale += (new Vector3(.01f, .01f, .01f));
+        }
     }
     void OnCollisionEnter(Collision col)
     {
@@ -40,7 +46,6 @@ public class controller : MonoBehaviour {
         {
             Destroy(col.gameObject);
             counter++;
-            transform.localScale = (new Vector3(counter,counter,counter));
         }
     }
 }
