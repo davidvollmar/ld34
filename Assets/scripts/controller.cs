@@ -23,7 +23,6 @@ public class controller : MonoBehaviour {
             var gameobj = Instantiate(mapPart, new Vector3(i * 2.0F + 60, 2f + (i * 0.2f), 0.5f), Quaternion.identity);
             ((GameObject)gameobj).SetActive(true);
         }
-
     }
 
     void Update () {         
