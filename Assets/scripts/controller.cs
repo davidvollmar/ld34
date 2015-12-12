@@ -7,6 +7,7 @@ public class controller : MonoBehaviour {
     public GameObject gcamera;
     private Rigidbody rb;
     private bool hitLevel = false;
+    private int counter = 1;
 
 	// Use this for initialization
 	void Start () {
@@ -25,12 +26,21 @@ public class controller : MonoBehaviour {
     }
     void OnCollisionEnter(Collision col)
     {
-        if(col.collider.name == "level")
+        if (col.collider.tag == "Level")
             hitLevel = true;
     }
     void OnCollisionExit(Collision col)
     {
-        if (col.collider.name == "level")
+        if (col.collider.tag == "Level")
             hitLevel = false;
+    }
+    void OnTriggerEnter(Collider col)
+    {
+        if (col.tag == "Ball")
+        {
+            Destroy(col.gameObject);
+            counter++;
+            transform.localScale = (new Vector3(counter,counter,counter));
+        }
     }
 }
