@@ -29,6 +29,11 @@ public class controller : MonoBehaviour {
             rb.mass += .01f;
             transform.localScale += (new Vector3(.01f, .01f, .01f));
         }
+        else if (transform.localScale.x > counter && transform.localScale.x > 1.01f)
+        {
+            rb.mass -= .01f;
+            transform.localScale -= (new Vector3(.01f, .01f, .01f));
+        }
     }
     void OnCollisionEnter(Collision col)
     {
@@ -46,6 +51,13 @@ public class controller : MonoBehaviour {
         {
             Destroy(col.gameObject);
             counter++;
+        }
+        else if(col.tag == "Ball_shrink")
+        {
+            Destroy(col.gameObject);
+            counter -= 2;
+            if (counter < 1)
+                counter = 1;
         }
     }
 }
