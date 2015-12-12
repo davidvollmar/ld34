@@ -5,59 +5,74 @@ using System;
 public class controller : MonoBehaviour {
 
     public GameObject gcamera;
-    private Rigidbody rb;
+    public GameObject mapPart;
+    private Rigidbody rigidBody;
     private bool hitLevel = false;
-    private int counter = 1;
+    private int ballSize = 1;
 
-	// Use this for initialization
 	void Start () {
-        rb = GetComponent<Rigidbody>();
+        rigidBody = GetComponent<Rigidbody>();
+        WorldGen();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-        float value = 0f;
-            value = Input.GetAxis("Horizontal");
+
+    void WorldGen()
+    {
+        var random = new System.Random();
+        for (int i = 0; i < 10; i++)
+        {
+            var gameobj = Instantiate(mapPart, new Vector3(i * 2.0F + 60, 2f + (i * 0.2f), 0.5f), Quaternion.identity);
+            ((GameObject)gameobj).SetActive(true);
+        }
+
+    }
+
+    void Update () {         
+        float xVel = Input.GetAxis("Horizontal");
         if (!hitLevel)
-            value *= .4f;
-        var force = new Vector3((value *.5f), 0, 0);
-        rb.AddForce(force, ForceMode.Impulse);
+            xVel *= .4f;
+        var force = new Vector3((xVel *.5f), 0, 0);
+
+        rigidBody.AddForce(force, ForceMode.Impulse);
+        
         gcamera.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - (transform.localScale.x * 5));
 
-        if(transform.localScale.x < counter)
+        if(transform.localScale.x < ballSize)
         {
-            rb.mass += .01f;
+            rigidBody.mass += .01f;
             transform.localScale += (new Vector3(.01f, .01f, .01f));
         }
-        else if (transform.localScale.x > counter && transform.localScale.x > 1.01f)
+        else if (transform.localScale.x > ballSize && transform.localScale.x > 1.01f)
         {
-            rb.mass -= .01f;
+            rigidBody.mass -= .01f;
             transform.localScale -= (new Vector3(.01f, .01f, .01f));
         }
     }
+
     void OnCollisionEnter(Collision col)
     {
         if (col.collider.tag == "Level")
             hitLevel = true;
     }
+
     void OnCollisionExit(Collision col)
     {
         if (col.collider.tag == "Level")
             hitLevel = false;
     }
+
     void OnTriggerEnter(Collider col)
     {
         if (col.tag == "Ball")
         {
             Destroy(col.gameObject);
-            counter++;
+            ballSize++;
         }
         else if(col.tag == "Ball_shrink")
         {
             Destroy(col.gameObject);
-            counter -= 2;
-            if (counter < 1)
-                counter = 1;
+            ballSize -= 2;
+            if (ballSize < 1)
+                ballSize = 1;
         }
     }
 }
