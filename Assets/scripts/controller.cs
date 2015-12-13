@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.SceneManagement;
 
 public class controller : MonoBehaviour {
 
@@ -8,7 +9,8 @@ public class controller : MonoBehaviour {
     public GameObject mapPart;
     private Rigidbody rigidBody;
     private bool hitLevel = false;
-    private int ballSize = 1;
+    private float ballSize = 1;
+    private static float grow = .1f;
 
 	void Start () {
         rigidBody = GetComponent<Rigidbody>();
@@ -34,16 +36,19 @@ public class controller : MonoBehaviour {
         rigidBody.AddForce(force, ForceMode.Impulse);
         
         gcamera.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - (transform.localScale.x * 5));
-
-        if(transform.localScale.x < ballSize)
+        Debug.logger.Log(ballSize + " " + transform.localScale.x + " " + (transform.localScale.x == ballSize));
+        if (!Mathf.Approximately(transform.localScale.x, ballSize))
         {
-            rigidBody.mass += .01f;
-            transform.localScale += (new Vector3(.01f, .01f, .01f));
-        }
-        else if (transform.localScale.x > ballSize && transform.localScale.x > 1.01f)
-        {
-            rigidBody.mass -= .01f;
-            transform.localScale -= (new Vector3(.01f, .01f, .01f));
+            if (transform.localScale.x < ballSize)
+            {
+                rigidBody.mass += grow;
+                transform.localScale += (new Vector3(grow, grow, grow));
+            }
+            else if (transform.localScale.x > ballSize && transform.localScale.x > (1 + grow))
+            {
+                rigidBody.mass -= grow;
+                transform.localScale -= (new Vector3(grow, grow, grow));
+            }
         }
     }
 
@@ -63,13 +68,16 @@ public class controller : MonoBehaviour {
     {
         if (col.tag == "Ball")
         {
+            if(col.transform.localScale.x > transform.localScale.x)
+                SceneManager.LoadScene(SceneManager.GetSceneAt(0).buildIndex);
+
             Destroy(col.gameObject);
-            ballSize++;
+            ballSize += col.transform.localScale.x;
         }
         else if(col.tag == "Ball_shrink")
         {
             Destroy(col.gameObject);
-            ballSize -= 2;
+            ballSize -= col.transform.localScale.x;
             if (ballSize < 1)
                 ballSize = 1;
         }
